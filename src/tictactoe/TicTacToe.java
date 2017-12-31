@@ -1,21 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+//--------------------------------------------------------------------------
+// Names: Benny Lin, Sydnee Woodhouse
+// Date: December 30, 2017
+// Program: This is a program that allows the user to play tic-tac-toe
+//--------------------------------------------------------------------------
+
 package tictactoe;
 
-/**
- *
- * @author Sydnee
- */
-public class TicTacToe {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-    }
-    
+public class TicTacToe 
+{
+    public static void main(String[] args) 
+    {
+        
+    }   
 }
