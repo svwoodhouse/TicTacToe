@@ -5,12 +5,29 @@
 //--------------------------------------------------------------------------
 
 package tictactoe;
+import javax.swing.*;
 
-public class TicTacToe 
+public class TicTacToe extends JFrame
 {
-    public static void main(String[] args) 
-    {
-    }   
+    JPanel p = new JPanel();
+    JButton a = new JButton("Play Against AI");
+    JButton b = new JButton("Play Against a Friend");
+    
+    public static void main(String[] args){
+        new TicTacToe();
+    }
+    
+    public TicTacToe(){
+        super("Tic Tac Toe");
+        setSize(400,300);
+        setResizable(true);
+        p.add(a);
+        p.add(b);
+        add(p);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+        
+    }
 }
 
 
