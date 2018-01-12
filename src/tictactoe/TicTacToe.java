@@ -35,7 +35,7 @@ public class TicTacToe extends JFrame
     JButton f = new JButton("Exit");
     
     // Tic Tac Toe game logo
-    JLabel imgLabel = new JLabel(new ImageIcon("C:\\Users\\i861570\\Documents\\NetBeansProjects\\TicTacToe\\src\\tictactoe\\tictactoe_logo.png"));
+    JLabel imgLabel = new JLabel(new ImageIcon(getClass().getResource("tictactoe_logo.png")));
     
     public static void main(String[] args)
     {
