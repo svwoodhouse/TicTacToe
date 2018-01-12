@@ -84,4 +84,14 @@ public class Game
     {
         
     }
+    
+    public void setUpClient()
+    {
+        
+    }
+    
+    public void setUpServer()
+    {
+        
+    }
 };
