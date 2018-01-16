@@ -46,6 +46,12 @@ public class Game
     private ServerSocket serverSocket;
     private boolean accepted;
     
+    // Variables for computer calculation
+    private int depth = 4;
+    private int playerNum;
+    private int placesRemaining;
+    private int value;
+    
     // Constructo that sets up the game board
     public Game(JFrame frame, JPanel p, String player_1, String player_2)
     {
@@ -121,6 +127,7 @@ public class Game
                                                 }
                                             }
                                             p1Turn = true;
+                                         
                                         }
                                     }
                                     
@@ -292,5 +299,41 @@ public class Game
     
     public void onlineMode()
     {
+    }
+    
+    private void computerTurn(int depth, int playerNum, int placesRemaining, int value)
+    {
+        // Uses the Minimax Algorithm
+        value = 0;
+        this.playerNum = playerNum;
+        this.depth = depth;
+        this.placesRemaining = placesRemaining;
+        this.value = value;
+        createChildren();
+    }
+    
+    private void createChildren()
+    {
+        // Stops
+        int v;
+        if(this.depth >= 0)
+        {
+            v = this.placesRemaining - 1;
+            
+        }
+    }
+    
+    public void playComputer()
+    {
+        boolean runGame = true;
+        while(runGame)
+        {
+            if(p1Turn != true)
+            {
+                
+            }
+            
+        }
+        
     }
 };

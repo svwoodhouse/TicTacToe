@@ -7,6 +7,7 @@
 //Imports & Packages
 package tictactoe;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +35,7 @@ public class TicTacToe extends JFrame
     JButton e = new JButton("How To Play");
     JButton f = new JButton("Exit");
     
+    
     // Tic Tac Toe game logo
     JLabel imgLabel = new JLabel(new ImageIcon(getClass().getResource("tictactoe_logo.png")));
     
@@ -52,6 +54,13 @@ public class TicTacToe extends JFrame
         
         // Creates a GridLayout to contain the buttons in the JPanel
         // Adds the buttons to the buttonPanel
+        a.setPreferredSize(new Dimension(100, 100));
+        b.setPreferredSize(new Dimension(100, 100));
+        c.setPreferredSize(new Dimension(100, 100));
+        d.setPreferredSize(new Dimension(100, 100));
+        e.setPreferredSize(new Dimension(100, 100));
+        f.setPreferredSize(new Dimension(100, 100));
+        
         buttonPanel.setLayout(new GridLayout(2,3));
         buttonPanel.add(a);
         buttonPanel.add(b);
