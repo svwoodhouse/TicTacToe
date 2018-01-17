@@ -93,6 +93,7 @@ public class TicTacToe extends JFrame
                 mainPanel.removeAll();
                 mainPanel.revalidate();
                 Game g = new Game(mainFrame,mainPanel,"Player 1", "Computer");
+                g.AIEnabled = true;
             }
         });
         

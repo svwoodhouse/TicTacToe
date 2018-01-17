@@ -29,6 +29,7 @@ public class Game
     private String p1Name;
     private String p2Name;
     private boolean p1Turn;
+    public boolean AIEnabled;
     private JButton[][] buttons;
     private boolean gameOver;
     private String[][] gameBoard = new String[3][3];
@@ -147,6 +148,12 @@ public class Game
                                             }
                                             p1Turn = true;
                                         }
+                                    }
+                                    // If user selects the AI Mode
+                                    else if(AIEnabled)
+                                    {
+                                        playComputer();
+                                        p1Turn = true;
                                     }
                                 }
                                 
@@ -301,39 +308,22 @@ public class Game
     {
     }
     
-    private void computerTurn(int depth, int playerNum, int placesRemaining, int value)
+    private void playComputer()
     {
-        // Uses the Minimax Algorithm
-        value = 0;
-        this.playerNum = playerNum;
-        this.depth = depth;
-        this.placesRemaining = placesRemaining;
-        this.value = value;
-        createChildren();
-    }
-    
-    private void createChildren()
-    {
-        // Stops
-        int v;
-        if(this.depth >= 0)
+        outerloop:
+        for(int i = 0; i < this.gameBoard.length; i++)
         {
-            v = this.placesRemaining - 1;
-            
-        }
-    }
-    
-    public void playComputer()
-    {
-        boolean runGame = true;
-        while(runGame)
-        {
-            if(p1Turn != true)
+            for(int j = 0; j < this.gameBoard.length; j++)
             {
-                
+                if(this.gameBoard[i][j] == "" || this.gameBoard[i][j] == null)
+                {
+                    buttons[i][j].doClick();
+                    p1Turn = true;
+                    break outerloop;
+                }
             }
-            
         }
-        
     }
+    
 };
+
