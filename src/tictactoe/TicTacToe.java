@@ -13,12 +13,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 // Main class that runs the Main Menu for the Tic Tac Toe Game
-public class TicTacToe extends JFrame
+public class TicTacToe extends JFrame implements Serializable
 {
     // Setup for the main Game Frame and Game Panel
     JFrame mainFrame = new JFrame("Tic Tac Toe");
@@ -93,6 +96,7 @@ public class TicTacToe extends JFrame
                 mainPanel.removeAll();
                 mainPanel.revalidate();
                 Game g = new Game(mainFrame,mainPanel,"Player 1", "Computer");
+                g.g = g;
                 g.AIEnabled = true;
             }
         });
@@ -112,6 +116,7 @@ public class TicTacToe extends JFrame
                 mainPanel.removeAll();
                 mainPanel.revalidate();
                 Game g = new Game(mainFrame,mainPanel,"Player 1", "Player 2");
+                g.g = g;
             }
         });
         
@@ -131,6 +136,58 @@ public class TicTacToe extends JFrame
                 Game g = new Game(mainFrame,mainPanel,"Player 1", "Player 2");
             }
         });
+        
+        // Checks to see if user has a saved game
+        d.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+
+                mainPanel.removeAll();
+                mainPanel.revalidate();
+                mainFrame.getContentPane().removeAll();
+                mainFrame.getContentPane().revalidate();
+
+                Game board = null;
+                
+                String file = "src/savedData/savedGame.dat";
+                    try{
+                            FileInputStream fis = new FileInputStream(file);
+                            ObjectInputStream ois = new ObjectInputStream(fis);
+                            board = (Game) ois.readObject();
+                            ois.close();
+                            fis.close();
+                        }
+                    catch(IOException | ClassNotFoundException ex)
+                    {
+                        System.out.println(ex.toString());
+                    }
+                        board.setBoard(mainFrame, mainPanel);
+                        board.g = board;
+            } 
+        });     
+        
+        // This button shwos the user how to play
+        e.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                JOptionPane.showMessageDialog(null, "RULES FOR TIC-TAC-TOE\n" + "\n" + "1. The game is played on a grid that's 3 squares by 3 squares.\n" +
+                "\n" + "2. You are X, your friend (or the computer in this case) is O. Players take turns putting their marks in empty squares.\n" +
+                "\n" + "3. The first player to get 3 of her marks in a row (up, down, across, or diagonally) is the winner.\n" +
+                "\n" + "4. When all 9 squares are full, the game is over. If no player has 3 marks in a row, the game ends in a tie.");
+            }
+        });
+        
+        // This button closes the application
+        f.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                System.exit(0);
+            }
+        });
+        
         
     }
 }

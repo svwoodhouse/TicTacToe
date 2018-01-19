@@ -1,13 +1,18 @@
 package tictactoe;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,19 +25,30 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class Game 
+public class Game implements Serializable
 {
     // Private variables
+    // Main frame and panel for the game
     private JFrame gameFrame;
     private JPanel gamePanel;
+    
+    // Jpanel that contains the tic tac toe buttons and the save buttons
+    private JPanel saveGamePanel;
+    private JPanel gameGridPanel;
+
     private String playersTurn = "Player 1";
     private String p1Name;
     private String p2Name;
     private boolean p1Turn;
     public boolean AIEnabled;
+    public Game g;
+    
+    // JButton Array that contains Tic Tac Toe Game Buttons and the Save Buttons
     private JButton[][] buttons;
+    private JButton[] saveButtons;
+    
     private boolean gameOver;
-    private String[][] gameBoard = new String[3][3];
+    private String[][] gameBoard;
     
     // Red X and Blue O Icon
     private ImageIcon redX = new ImageIcon(getClass().getResource("red_X.png"));
@@ -53,13 +69,196 @@ public class Game
     private int placesRemaining;
     private int value;
     
-    // Constructo that sets up the game board
+    // Constructor that sets up the game board
+    public void setBoard(JFrame frame, JPanel p)
+    {        
+        p.setLayout(new BorderLayout());
+        p.add(this.gameGridPanel,BorderLayout.CENTER);
+        p.add(this.saveGamePanel, BorderLayout.SOUTH);
+        p.revalidate();
+        frame.getContentPane().add(p);
+        frame.revalidate();
+        
+        for(int i = 0; i < 3; i++)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                System.out.print(buttons[i][j].getText());
+            }
+            System.out.println();
+        }
+   
+        ActionListener actionListener = new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+
+                        //System.out.println(e.paramString());
+                        
+                    if(e.getSource() == saveButtons[0])
+                    {
+                        saveGame();
+                    }
+                    
+                    else if(e.getSource() == saveButtons[1])
+                    {
+                        System.exit(0);
+                    }
+                    // If another player has already chosen this button, an error message appears
+                    else{
+                    for(int i = 0; i < 3; i++)
+                    {
+                        for(int j = 0; j < 3; j++)
+                        {
+                            if((e.getSource() == buttons[i][j]) && (gameBoard[i][j] == "X" || gameBoard[i][j] == "O"))
+                            {
+                                JOptionPane.showMessageDialog(gameFrame, "Error. Choose another spot"); 
+                            }
+                            
+                            else if(e.getSource() == buttons[i][j])
+                            {
+                                if(p1Turn)
+                                {
+                                    buttons[i][j].setText("X");
+                                    gameBoard[i][j] = "X";
+                                    buttons[i][j].setIcon(resizeIcon(redX,180,160));
+                                    p1Turn= false;
+                                  
+                                    if(playerWon("X"))
+                                    {
+                                        int dialogResult = JOptionPane.showConfirmDialog(null, "Player One Won! Would you like to replay?");
+                                        if(dialogResult == JOptionPane.YES_OPTION)
+                                        {
+                                            for(int k = 0; k < 3; k++)
+                                            {
+                                                for(int l = 0; l < 3; l++)
+                                                {
+                                                    buttons[k][l].setText("");
+                                                    buttons[k][l].setIcon(null);
+                                                    gameBoard[k][l] = null;
+                                                }
+                                            }
+                                            p1Turn = true;
+                                         
+                                        }
+                                    }
+                                    
+                                    else if(isBoardFull())
+                                    {
+                                        int dialogResult = JOptionPane.showConfirmDialog(null, "Game Board Full. Would you like to restart?");
+                                        if(dialogResult == JOptionPane.YES_OPTION)
+                                        {
+                                            for(int k = 0; k < 3; k++)
+                                            {
+                                                for(int l = 0; l < 3; l++)
+                                                {
+                                                    buttons[k][l].setText("");
+                                                    buttons[k][l].setIcon(null);
+                                                    gameBoard[k][l] = null;
+                                                }
+                                            }
+                                            p1Turn = true;
+                                        }
+                                    }
+                                    // If user selects the AI Mode
+                                    else if(AIEnabled)
+                                    {
+                                        playComputer();
+                                        p1Turn = true;
+                                    }
+                                }
+                                
+                                else
+                                {
+                                    buttons[i][j].setText("O");
+                                    buttons[i][j].setIcon(resizeIcon(blueO,180,160));
+                                    gameBoard[i][j] = "O";
+                                    p1Turn = true;
+                                    
+                                    if(playerWon("O"))
+                                    {
+                                        int dialogResult = JOptionPane.showConfirmDialog(null, "Player Two Won! Would you like to replay?");
+                                        if(dialogResult == JOptionPane.YES_OPTION)
+                                        {
+                                            for(int k = 0; k < 3; k++)
+                                            {
+                                                for(int l = 0; l < 3; l++)
+                                                {
+                                                    buttons[k][l].setText("");
+                                                    buttons[k][l].setIcon(null);
+                                                    gameBoard[k][l] = null;
+                                                }
+                                            }
+                                            p1Turn = true;
+                                        }
+                                    }
+                                    
+                                    else if(isBoardFull())
+                                    {
+                                        int dialogResult = JOptionPane.showConfirmDialog(null, "Game Board Full. Would you like to restart?");
+                                        if(dialogResult == JOptionPane.YES_OPTION)
+                                        {
+                                            for(int k = 0; k < 3; k++)
+                                            {
+                                                for(int l = 0; l < 3; l++)
+                                                {
+                                                    buttons[k][l].setText("");
+                                                    buttons[k][l].setIcon(null);
+                                                    gameBoard[k][l] = null;
+                                                }
+                                            }
+                                            p1Turn = true;
+                                        }
+                                    }
+                                }
+                            
+                            }
+                        }
+                    }
+                    }
+                    
+                    for(int i = 0; i < 3; i++)
+                    {
+                        for(int j = 0; j < 3; j++)
+                        {
+                            if(buttons[i][j].getText() == null)
+                                System.out.print("");
+                            else
+                                System.out.print(buttons[i][j].getText());
+                        }
+                            System.out.println();
+                    }
+                           System.out.println();
+                }
+            };
+        
+       for(int i = 0; i < 3; i++)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                buttons[i][j].addActionListener(actionListener);
+            }
+        }
+       
+
+       
+       saveButtons[0].addActionListener(actionListener);
+       saveButtons[1].addActionListener(actionListener);
+
+    }
     public Game(JFrame frame, JPanel p, String player_1, String player_2)
     {
-        GridLayout gameGrid = new GridLayout(3,3);
-        JButton[][] gameButtons = new JButton[3][3];
+        JPanel saveGridPanel = new JPanel();
+        saveGridPanel.setLayout(new GridLayout(1,2));
         
-        // Array to contain the game buttons
+        JPanel gameGridPanel = new JPanel();
+        gameGridPanel.setLayout(new GridLayout(3,3));
+        
+
+        JButton[][] gameButtons = new JButton[3][3];
+        JButton[] saveButtons = new JButton[2];
+        
+        // Fills the array to contain the game buttons
         for(int i = 0; i < 3; i++)
         {
             for(int j = 0; j < 3; j++)
@@ -70,15 +269,23 @@ public class Game
             }
         }
         
-        p.setLayout(gameGrid);
+        saveButtons[0] = new JButton("Save");
+        saveButtons[1] = new JButton("Exit");
+
+      //  p.setLayout(gameGrid);
         for(int i = 0; i < 3; i++)
         {
             for(int j = 0; j < 3; j++)
             {
-                p.add(gameButtons[i][j]);
+                gameGridPanel.add(gameButtons[i][j]);
             }
         }
+        saveGridPanel.add(saveButtons[0]);
+        saveGridPanel.add(saveButtons[1]);
         
+        p.setLayout(new BorderLayout());
+        p.add(gameGridPanel,BorderLayout.CENTER);
+        p.add(saveGridPanel, BorderLayout.SOUTH);
         frame.getContentPane().add(p);
         
         // Sets the private variables
@@ -89,12 +296,26 @@ public class Game
         gameFrame = frame;
         gamePanel = p;
         p1Turn = true;
+        gameBoard = new String[3][3];
+        this.saveGamePanel = saveGridPanel;
+        this.gameGridPanel = gameGridPanel;
+        this.saveButtons = saveButtons;
         
         ActionListener actionListener = new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
-                {
+                {                             
+                    if(e.getSource() == saveButtons[0])
+                    {
+                        saveGame();
+                        System.exit(0);
+                    }
+                    else if(e.getSource() == saveButtons[1])
+                    {
+                        System.exit(0);
+                    }
                     // If another player has already chosen this button, an error message appears
+                    else{
                     for(int i = 0; i < 3; i++)
                     {
                         for(int j = 0; j < 3; j++)
@@ -204,6 +425,7 @@ public class Game
                             }
                         }
                     }
+                    }
                 }
             };
         
@@ -214,6 +436,9 @@ public class Game
                 buttons[i][j].addActionListener(actionListener);
             }
         }
+       
+       saveButtons[0].addActionListener(actionListener);
+       saveButtons[1].addActionListener(actionListener);
     }
    
     boolean isBoardFull()
@@ -306,6 +531,21 @@ public class Game
     
     public void onlineMode()
     {
+    }
+    
+    public void saveGame()
+    {
+        try {
+                FileOutputStream fos = new FileOutputStream("src/savedData/savedGame.dat");
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(this.g);
+                oos.close();
+                System.exit(0);
+            } 
+        catch(IOException ex) 
+            {
+                System.out.println(ex.toString());
+            }
     }
     
     private void playComputer()
